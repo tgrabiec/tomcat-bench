@@ -181,5 +181,5 @@ Load driver:
 
 ```sh
 cd ~/src/tomcat-bench
-echo TOMCAT_BENCHMARK_VERSION=$(git rev-parse HEAD)
+echo BENCHMARK_VERSION=$(git rev-parse HEAD)
 ```
