@@ -62,7 +62,7 @@ cp build/release/usr.img usr.img.original
 Clone benchmark scripts (first time only)
 
 ```sh
-git clone https://github.com/tgrabiec/tomcat-bench cd ~/src/tomcat-bench
+git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
 ```
 
 Checkout
@@ -115,7 +115,7 @@ Restore system configuration on load driver machine
 
 ```sh
 cd ~/src/tomcat-bench
-sudo ./restore_sys_conf.sh
+sudo ./restore_sys_conf.sh && rm ./restore_sys_conf.sh
 ```
 
 ### Obtaining test variables
@@ -124,19 +124,19 @@ Host:
 
 ```sh
 cd ~/src/osv
-OSV_VERSION=$(git rev-parse HEAD)
+echo OSV_VERSION=$(git rev-parse HEAD)
 cd apps
-APPS_VERSION=$(git rev-parse HEAD)
+echo APPS_VERSION=$(git rev-parse HEAD)
 ```
 
 ```sh
 cd ~/src/FrameworkBenchmarks
-TEST_APP_VERSION=$(git rev-parse HEAD)
+echo TEST_APP_VERSION=$(git rev-parse HEAD)
 ```
 
 Load driver:
 
 ```sh
 cd ~/src/tomcat-bench
-TOMCAT_BENCHMARK_VERSION=$(git rev-parse HEAD)
+echo TOMCAT_BENCHMARK_VERSION=$(git rev-parse HEAD)
 ```
