@@ -57,6 +57,42 @@ Save the image to a backup file
 cp build/release/usr.img usr.img.original
 ```
 
+### Prepare fedora image
+
+TODO: Describe how to prepare base fedora image
+
+Start your fedora image:
+
+```sh
+cd ~/src/osv
+sudo scripts/run.py -m2g -nv -b bridge0 -i ~/fedora/fedora.img
+export GUEST_IP=10.0.0.176
+```
+
+Upload tomcat deployment to fedora guest
+```sh
+cd apps/tomcat/upstream
+zip -r tomcat.zip apache-tomcat-7.0.42/
+scp tomcat.zip root@${GUEST_IP}:~
+```
+
+On fedora guest, unzip the package and shut down
+
+```sh
+cd ~
+rm -rf apache-tomcat-*/
+unzip tomcat.zip
+ln -s apache-tomcat-7.0.42 tomcat
+shutdown now
+```
+
+Save image backup
+
+```sh
+cp ~/fedora/fedora.img ~/fedora/fedora.img.original 
+```
+
+
 ## Preparing load driver machine
 
 Clone benchmark scripts (first time only)
@@ -79,24 +115,44 @@ Apply system configuration
 sudo ./setup.sh
 ```
 
-## Running the test on OSv
 
+## Running the test
 
-1. Start OSv on host machine
+Restore image from the backup and start the guest.
+
+For OSv:
 ```sh
 cp usr.img.original build/release/usr.img
 sudo scripts/run.py -m4g -nv -b bridge0
 ```
-Read the printed IP of OSv.
 
-1. On load driver machine assign the IP to `GUEST_IP` variable.
+For Fedora:
+```sh
+cp ~/fedora/fedora.img.original ~/fedora/fedora.img
+sudo scripts/run.py -m4g -nv -b bridge0 -i ~/fedora/fedora.img
+```
 
-1. On load driver machine, start the test:
+Read the printed IP of OSv. On load driver machine assign the IP to `GUEST_IP` variable.
+
+On fedora guest:
+```osv
+export JAVA_OPTS="-Xmx2g -Xms2g"
+cd tomcat/bin
+./startup.sh
+```
+
+Start the test on load driver machine:
+
 ```sh
 ./perform-one-test.sh
 ```
 
-1. On host machine, kill the guest.
+Kill the guest.
+
+
+## Running the test on fedora
+
+Prepare 
 
 
 ## After test
