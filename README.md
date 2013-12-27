@@ -81,32 +81,22 @@ sudo ./setup.sh
 
 ## Running the test on OSv
 
-Start OSv
 
+1. Start OSv on host machine
 ```sh
 cp usr.img.original build/release/usr.img
 sudo scripts/run.py -m4g -nv -b bridge0
 ```
+Read the printed IP of OSv.
 
-Read the printed IP of OSv and assign to `GUEST_IP` variable.
+1. On load driver machine assign the IP to `GUEST_IP` variable.
 
-Warm up
-
+1. On load driver machine, start the test:
 ```sh
-wrk --latency -t4 -c256 -d30s http://${GUEST_IP}:8081/servlet/json
+./perform-one-test.sh
 ```
 
-Perform the test
-
-```sh
-wrk --latency -t4 -c128 -d1m http://${GUEST_IP}:8081/servlet/json | tee wrk.out
-```
-
-Parse the output
-
-```sh
-./wrk-parse.py wrk.out
-```
+1. On host machine, kill the guest.
 
 
 ## After test
