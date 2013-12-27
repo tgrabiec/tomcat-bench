@@ -9,6 +9,9 @@ Setup repositories (first timers only)
 ```sh
 git clone https://github.com/tgrabiec/FrameworkBenchmarks.git ~/src/FrameworkBenchmarks
 git clone https://github.com/cloudius-systems/osv.git ~/src/osv
+```
+
+```sh
 cd ~/src/osv/apps
 git remote add tgrabiec https://github.com/tgrabiec/osv-apps.git
 ```
