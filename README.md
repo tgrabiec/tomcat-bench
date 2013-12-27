@@ -115,7 +115,8 @@ Restore system configuration on load driver machine
 
 ```sh
 cd ~/src/tomcat-bench
-sudo ./restore_sys_conf.sh && rm ./restore_sys_conf.sh
+sudo ./restore_sys_conf.sh
+rm ./restore_sys_conf.sh
 ```
 
 ### Obtaining test variables
