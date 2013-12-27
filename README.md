@@ -86,7 +86,13 @@ wrk --latency -t4 -c256 -d30s http://${GUEST_IP}:8081/servlet/json
 Perform the test
 
 ```sh
-wrk --latency -t4 -c128 -d1m http://${GUEST_IP}:8081/servlet/json
+wrk --latency -t4 -c128 -d1m http://${GUEST_IP}:8081/servlet/json | tee wrk.out
+```
+
+Parse the output
+
+```sh
+./wrk-parse.py wrk.out
 ```
 
 
