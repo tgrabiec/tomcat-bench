@@ -1,8 +1,5 @@
-tomcat-bench
-============
-
-
-# Tomcat performance test
+Tomcat performance testing
+=========================
 
 
 ## Preparing host machine
