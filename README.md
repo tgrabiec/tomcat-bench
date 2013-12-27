@@ -35,6 +35,7 @@ mvn clean install
 Checkout tomcat module
 
 ```sh
+cd ~/src/osv/apps
 git fetch tgrabiec
 git checkout ${APPS_VERSION_REF:-tgrabiec/tomcat-perf}
 ```
@@ -42,10 +43,10 @@ git checkout ${APPS_VERSION_REF:-tgrabiec/tomcat-perf}
 Copy test app to tomcat module
 
 ```sh
-cp ~/src/FrameworkBenchmarks/servlet/target/servlet.war ~/src/osv/apps/tomcat/upstream/apache-tomcat-${TOMCAT_VERSION}/webapps/
+cp ~/src/FrameworkBenchmarks/servlet/target/servlet.war ~/src/osv/apps/tomcat/upstream/*/webapps/
 ```
 
-Build the image
+Build OSv image
 ```sh
 cd ~/src/osv
 make external && make image=tomcat
