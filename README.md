@@ -150,10 +150,6 @@ Start the test on load driver machine:
 Kill the guest.
 
 
-## Running the test on fedora
-
-Prepare 
-
 
 ## After test
 
