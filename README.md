@@ -75,7 +75,7 @@ cp usr.img.original build/release/usr.img
 sudo scripts/run.py -m4g -nv -b bridge0
 ```
 
-Read the printed IP of OSv and assign to GUEST_IP variable.
+Read the printed IP of OSv and assign to `GUEST_IP` variable.
 
 Warm up
 
