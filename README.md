@@ -89,6 +89,7 @@ Perform the test
 wrk --latency -t4 -c128 -d1m http://${GUEST_IP}:8081/servlet/json
 ```
 
+
 ## After test
 
 Restore system configuration on load driver machine
@@ -96,4 +97,27 @@ Restore system configuration on load driver machine
 ```sh
 cd ~/src/tomcat-bench
 sudo ./restore_sys_conf.sh
+```
+
+## Obtaining test variables
+
+Host:
+
+```sh
+cd ~/src/osv
+OSV_VERSION=$(git rev-parse HEAD)
+cd apps
+APPS_VERSION=$(git rev-parse HEAD)
+```
+
+```sh
+cd ~/src/FrameworkBenchmarks
+TEST_APP_VERSION=$(git rev-parse HEAD)
+```
+
+Load driver:
+
+```sh
+cd ~/src/tomcat-bench
+TOMCAT_BENCHMARK_VERSION=$(git rev-parse HEAD)
 ```
