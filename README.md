@@ -70,8 +70,9 @@ Start your fedora image:
 ```sh
 cd ~/src/osv
 sudo scripts/run.py -m2g -nv -b bridge0 -i ~/fedora/fedora.img
-export GUEST_IP=10.0.0.176
+GUEST_IP=10.0.0.176
 ```
+
 
 Upload tomcat deployment to fedora guest
 ```sh
@@ -136,7 +137,7 @@ cp ~/fedora/fedora.img.original ~/fedora/fedora.img
 sudo scripts/run.py -m4g -nv -b bridge0 -i ~/fedora/fedora.img
 ```
 
-Read the printed IP of OSv. On load driver machine assign the IP to `GUEST_IP` variable.
+Read the IP of OSv. On load driver machine assign the IP to `GUEST_IP` variable.
 
 On fedora guest:
 ```osv
