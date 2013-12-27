@@ -4,32 +4,39 @@ Tomcat performance testing
 
 ## Preparing host machine
 
+Setup repositories (first timers only)
+
+```sh
+git clone https://github.com/tgrabiec/FrameworkBenchmarks.git ~/src/FrameworkBenchmarks
+git clone https://github.com/cloudius-systems/osv.git ~/src/osv
+cd ~/src/osv/apps
+git remote add tgrabiec https://github.com/tgrabiec/osv-apps.git
+```
 
 Checkout OSv
 
 ```sh
 cd ~/src/osv
-git checkout ${OSV_VERSION}
+git fetch
+git checkout ${OSV_VERSION_REF:-origin/master}
 git submodule update
 ```
 
 Build the test app
 
 ```sh
-cd ~/src
-git clone https://github.com/tgrabiec/FrameworkBenchmarks.git
-git checkout ${TEST_APP_VERSION}
-cd FrameworkBenchmarks/servlet
+cd ~/src/FrameworkBenchmarks
+git fetch
+git checkout ${TEST_APP_VERSION_REF:-origin/master}
+cd servlet
 mvn clean install
 ```
 
 Checkout tomcat module
 
 ```sh
-cd apps
-git remote add tgrabiec https://github.com/tgrabiec/osv-apps.git
 git fetch tgrabiec
-git checkout 93bc7f65fec70a754657868650a79d719ff92772
+git checkout ${APPS_VERSION_REF:-tgrabiec/tomcat-perf}
 ```
 
 Copy test app to tomcat module
@@ -41,7 +48,7 @@ cp ~/src/FrameworkBenchmarks/servlet/target/servlet.war ~/src/osv/apps/tomcat/up
 Build the image
 ```sh
 cd ~/src/osv
-make image=tomcat
+make external && make image=tomcat
 ```
 
 Save the image to a backup file
@@ -52,12 +59,18 @@ cp build/release/usr.img usr.img.original
 
 ## Preparing load driver machine
 
-Checkout benchmark scripts
+Clone benchmark scripts (first time only)
 
 ```sh
-cd ~/src
-git clone https://github.com/tgrabiec/tomcat-bench
-cd tomcat-bench
+git clone https://github.com/tgrabiec/tomcat-bench cd ~/src/tomcat-bench
+```
+
+Checkout
+
+```sh
+cd ~/src/tomcat-bench
+git fetch
+git checkout ${TOMCAT_BENCHMARK_VERSION_REF:-origin/master}
 ```
 
 Apply system configuration
