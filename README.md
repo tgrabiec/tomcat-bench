@@ -105,7 +105,7 @@ cd ~/src/tomcat-bench
 sudo ./restore_sys_conf.sh
 ```
 
-## Obtaining test variables
+### Obtaining test variables
 
 Host:
 
