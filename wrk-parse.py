@@ -42,10 +42,10 @@ Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
     @property
     def error_count(self):
         return sum([
-            self.m.group('err_timeout') or 0,
-            self.m.group('err_connect') or 0,
-            self.m.group('err_write') or 0,
-            self.m.group('err_read') or 0
+            int(self.m.group('err_timeout')) or 0,
+            int(self.m.group('err_connect')) or 0,
+            int(self.m.group('err_write')) or 0,
+            int(self.m.group('err_read')) or 0
         ])
 
     @property
