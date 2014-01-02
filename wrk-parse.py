@@ -26,7 +26,8 @@ class wrk_output:
      90%\s*(?P<latency_p90>.*?)
      99%\s*(?P<latency_p99>.*?))?
   (?P<total_requests>\d+) requests in (?P<total_duration>.+?), (?P<total_read>.+?) read(
-  Socket errors: connect (?P<err_connect>\d+), read (?P<err_read>\d+), write (?P<err_write>\d+), timeout (?P<err_timeout>\d+))?
+  Socket errors: connect (?P<err_connect>\d+), read (?P<err_read>\d+), write (?P<err_write>\d+), timeout (?P<err_timeout>\d+))?(
+  Non-2xx or 3xx responses: (?P<bad_responses>\d+))?
 Requests/sec\:\s*(?P<req_per_sec>.+?)
 Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
 
@@ -41,12 +42,13 @@ Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
 
     @property
     def error_count(self):
-        return sum([
-            int(self.m.group('err_timeout') or '0'),
-            int(self.m.group('err_connect') or '0'),
-            int(self.m.group('err_write') or '0'),
-            int(self.m.group('err_read') or '0')
-        ])
+        return sum(map(int, [
+            self.m.group('err_timeout') or '0',
+            self.m.group('err_connect') or '0',
+            self.m.group('err_write') or '0',
+            self.m.group('err_read') or '0',
+            self.m.group('bad_responses') or '0'
+        ]))
 
     @property
     def latency_max(self):
