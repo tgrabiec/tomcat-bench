@@ -71,13 +71,13 @@ Restore image from the backup and start the guest.
 For OSv:
 ```sh
 cd ~/src/osv
-cp usr.img.original build/release/usr.img
+cp usr.img.original build/release/usr.img && \
 sudo scripts/run.py -m4g -nv -b bridge0
 ```
 
 For Fedora:
 ```sh
-cp ~/fedora/fedora.img.original ~/fedora/fedora.img
+cp ~/fedora/fedora.img.original ~/fedora/fedora.img && \
 sudo scripts/run.py -m4g -nv -b bridge0 -i ~/fedora/fedora.img
 ```
 
