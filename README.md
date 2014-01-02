@@ -1,64 +1,21 @@
 Tomcat performance testing
 =========================
 
+First checkout latest version of this repository on all machines
+
+```sh
+test -e ~/src/tomcat-bench || git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
+cd ~/src/tomcat-bench
+git fetch
+git checkout -f ${TOMCAT_BENCHMARK_VERSION_REF:-origin/master}
+```
 
 ## Preparing host machine
 
-Setup repositories (first timers only)
+Run
 
 ```sh
-git clone https://github.com/tgrabiec/FrameworkBenchmarks.git ~/src/FrameworkBenchmarks
-git clone https://github.com/cloudius-systems/osv.git ~/src/osv
-```
-
-```sh
-cd ~/src/osv/apps
-git remote add tgrabiec https://github.com/tgrabiec/osv-apps.git
-```
-
-Checkout OSv
-
-```sh
-cd ~/src/osv
-git fetch
-git checkout ${OSV_VERSION_REF:-origin/master}
-git submodule update
-```
-
-Build the test app
-
-```sh
-cd ~/src/FrameworkBenchmarks
-git fetch
-git checkout ${TEST_APP_VERSION_REF:-origin/master}
-cd servlet
-mvn clean install
-```
-
-Checkout tomcat module
-
-```sh
-cd ~/src/osv/apps
-git fetch tgrabiec
-git checkout ${APPS_VERSION_REF:-tgrabiec/tomcat-perf}
-```
-
-Copy test app to tomcat module
-
-```sh
-cp ~/src/FrameworkBenchmarks/servlet/target/servlet.war ~/src/osv/apps/tomcat/upstream/*/webapps/
-```
-
-Build OSv image
-```sh
-cd ~/src/osv
-make external && make image=tomcat
-```
-
-Save the image to a backup file
-
-```sh
-cp build/release/usr.img usr.img.original
+./setup-host.sh
 ```
 
 ### Prepare fedora image
@@ -100,21 +57,7 @@ cp ~/fedora/fedora.img ~/fedora/fedora.img.original
 
 ## Preparing load driver machine
 
-Clone benchmark scripts (first time only)
-
-```sh
-git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
-```
-
-Checkout
-
-```sh
-cd ~/src/tomcat-bench
-git fetch
-git checkout ${TOMCAT_BENCHMARK_VERSION_REF:-origin/master}
-```
-
-Apply system configuration
+Run
 
 ```sh
 sudo ./setup.sh
@@ -127,6 +70,7 @@ Restore image from the backup and start the guest.
 
 For OSv:
 ```sh
+cd ~/src/osv
 cp usr.img.original build/release/usr.img
 sudo scripts/run.py -m4g -nv -b bridge0
 ```
