@@ -126,6 +126,10 @@ cd ~/src/FrameworkBenchmarks
 echo TEST_APP_VERSION=$(git rev-parse HEAD)
 ```
 
+```sh
+echo QEMU_VERSION=$(qemu-system-x86_64 -version | sed -r 's/.*version ([0-9.]+).*/\1/')
+```
+
 Load driver:
 
 ```sh
