@@ -66,7 +66,8 @@ sudo ./setup.sh
 
 ## Running the test
 
-Restore image from the backup and start the guest.
+Restore image from the backup and start the guest. It is important to do it before each test
+because the guest file system fills up very quickly. If the image was not restored the consecutive samples would not be independent.
 
 For OSv:
 ```sh
