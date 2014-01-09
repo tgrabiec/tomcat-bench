@@ -55,7 +55,7 @@ Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
         return text_to_nanos(self.m.group('latency_max'))
 
 
-def print_table(header_value_pairs):
+def print_table(data):
     formats = []
 
     for header, value in data:
@@ -70,10 +70,8 @@ if __name__ == "__main__":
     with open(sys.argv[1]) as file:
         summary = wrk_output(file.read())
 
-        data = [
+        print_table([
             ('Req/s', summary.requests_per_second),
             ('Errors', summary.error_count),
-            ('Latency-max [ns]', summary.latency_max),
-        ]
-
-        print_table(data)
+            ('Latency-max [ms]', summary.latency_max / 1e6),
+        ])
