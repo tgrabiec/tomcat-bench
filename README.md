@@ -116,7 +116,7 @@ Host:
 
 ```sh
 cd ~/src/osv
-echo OSV_VERSION=$(git rev-parse HEAD)
+echo OSV_VERSION=$(scripts/osv-version.sh)
 cd apps
 echo APPS_VERSION=$(git rev-parse HEAD)
 ```
