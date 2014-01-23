@@ -65,7 +65,7 @@ case $1 in
 esac
 $ chmod +x tomcat 
 $ cd ../rc3.d
-$ln -s ../init.d/tomcat S99tomcat
+$ ln -s ../init.d/tomcat S99tomcat
 $ shutdown now
 ```
 
