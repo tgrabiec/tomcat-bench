@@ -38,14 +38,35 @@ zip -r tomcat.zip apache-tomcat-7.0.42/
 scp tomcat.zip root@${GUEST_IP}:~
 ```
 
-On fedora guest, unzip the package and shut down
+Perform the following steps in fedora guest.
+
+Unzip the package:
 
 ```sh
-cd ~
-rm -rf apache-tomcat-*/
-unzip tomcat.zip
-ln -s apache-tomcat-7.0.42 tomcat
-shutdown now
+$ cd ~
+$ rm -rf apache-tomcat-*/
+$ unzip tomcat.zip
+$ ln -s apache-tomcat-7.0.42 tomcat
+```
+
+Create init script and shutdown:
+  
+```sh
+$ cd /etc/init.d
+$ cat > tomcat
+#!/bin/bash
+set -e
+case $1 in
+    'start')
+        export JAVA_OPTS="-Xmx2g -Xms2g"
+        cd /root/tomcat/bin
+        ./startup.sh 2>&1 > /var/log/tomcat.log < /dev/null &
+    ;;
+esac
+$ chmod +x tomcat 
+$ cd ../rc3.d
+$ln -s ../init.d/tomcat S99tomcat
+$ shutdown now
 ```
 
 Save image backup
@@ -82,14 +103,7 @@ cp ~/fedora/fedora.img.original ~/fedora/fedora.img && \
 sudo scripts/run.py -m4g -nv -b bridge0 -i ~/fedora/fedora.img
 ```
 
-Read the IP of OSv. On load driver machine assign the IP to `GUEST_IP` variable.
-
-On fedora guest:
-```osv
-export JAVA_OPTS="-Xmx2g -Xms2g"
-cd tomcat/bin
-./startup.sh
-```
+Read the IP of OSv and assign to `GUEST_IP` variable on **load driver** machine.
 
 Start the test on load driver machine:
 
