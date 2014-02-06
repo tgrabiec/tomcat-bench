@@ -11,10 +11,10 @@ function recoverable_sysctl()
     sysctl $param=$value || exit 1
 }
 
-test ! -e $RESTORE_FILE || {
-    echo "$RESTORE_FILE exists, aborting. Run ./$RESTORE_FILE first and remove the file."
-    exit 1
-}
+if [ -e $RESTORE_FILE ]; then
+    echo "=== Restoring previous config ==="
+    (./$RESTORE_FILE && rm $RESTORE_FILE) || exit 1
+fi
 
 touch $RESTORE_FILE
 chmod +x $RESTORE_FILE
