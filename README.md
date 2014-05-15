@@ -58,7 +58,7 @@ $ cat > tomcat
 set -e
 case $1 in
     'start')
-        export JAVA_OPTS="-Xmx2g -Xms2g"
+        export JAVA_OPTS="-Xmx2g -Xms2g -Djava.security.egd=file:/dev/./urandom"
         cd /root/tomcat/bin
         ./startup.sh 2>&1 > /var/log/tomcat.log < /dev/null &
     ;;
