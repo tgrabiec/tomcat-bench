@@ -1,153 +1,165 @@
 Tomcat performance testing
 =========================
 
-First checkout latest version of this repository on all machines
+# Setting up
+
+The testing evnironment needs to be checked out on the machine from which tests will be started:
 
 ```sh
-test -e ~/src/tomcat-bench || git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
-cd ~/src/tomcat-bench
-git fetch
-git checkout -f ${TOMCAT_BENCHMARK_VERSION_REF:-origin/master}
+git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
 ```
 
-## Preparing host machine
+Note that this does not have to be (and shoud not be) the machine on which tomcat or load driver will run.
 
-Run
+On the machines which you intend to use for testing, put the following configuration in `~/.bashrc`:
 
 ```sh
-./setup-host.sh
+# This is the location into which benchmark scripts will be rsync'ed to
+export BENCH_BASE=$HOME/src/tomcat-bench
+
+# This directory will hold images for test
+export BENCH_IMAGE_REPO=$HOME/img
+
+PATH=$PATH:$BENCH_BASE
 ```
 
-### Prepare fedora image
+# Test configuration
 
-TODO: Describe how to prepare base fedora image
+You need to create a configuration file by copying `configuration_template.py` and filling it in. You will pass
+the path to your configuration file to various commands.
 
-Start your fedora image:
+The host names used during test are specified there. There are two machines required for tomcat test:
+ * tomcat host
+ * load driver
+
+# Image repository
+
+Image which is tested needs to come from a repository, which lives on the tomcat host machine.
+
+To publish an image execute the following command in the directory in which you checked out `osv.git`:
 
 ```sh
-cd ~/src/osv
-sudo scripts/run.py -m2g -nv -b bridge0 -i ~/fedora/fedora.img
-GUEST_IP=10.0.0.176
+$ bench.py push myimage
 ```
 
+# Making image
 
-Upload tomcat deployment to fedora guest
-```sh
-cd apps/tomcat/upstream
-zip -r tomcat.zip apache-tomcat-7.0.42/
-scp tomcat.zip root@${GUEST_IP}:~
-```
-
-Perform the following steps in fedora guest.
-
-Unzip the package:
+The process of building an image for tomcat tests is fully automated. To build and publish an image run `bench.py make-img`:
 
 ```sh
-$ cd ~
-$ rm -rf apache-tomcat-*/
-$ unzip tomcat.zip
-$ ln -s apache-tomcat-7.0.42 tomcat
+$ ./bench.py make-img --conf conf-cloudius.py --src /data/tgrabiec/src myimage
 ```
 
-Create init script and shutdown:
-  
-```sh
-$ cd /etc/init.d
-$ cat > tomcat
-#!/bin/bash
-set -e
-case $1 in
-    'start')
-        export JAVA_OPTS="-Xmx2g -Xms2g -Djava.security.egd=file:/dev/./urandom"
-        cd /root/tomcat/bin
-        ./startup.sh 2>&1 > /var/log/tomcat.log < /dev/null &
-    ;;
-esac
-$ chmod +x tomcat 
-$ cd ../rc3.d
-$ ln -s ../init.d/tomcat S99tomcat
-$ shutdown now
-```
+The command can be started on any machine. The image will be made on the tomcat host machine.
 
-Save image backup
+The path you pass to `--src` will be used as a checkout base for various repositories. The file passed to `--conf` is the path
+to your test configuration file. Check `bench.py make-img -h` for more options.
+
+Note that you can always build an image yourself and publish using `bench.py push`.
+
+# Publishing a Linux guest image
+
+TODO
+
+# Performing a test
+
+The test is started like this:
 
 ```sh
-cp ~/fedora/fedora.img ~/fedora/fedora.img.original 
+./bench.py run --conf conf-cloudius.py --image myimage
 ```
 
+Checkout `bench.py run -h` for more options.
 
-## Preparing load driver machine
+After the test completes, the test result will be persisted in `results/<id>/` directory and will be available
+to reporting commands.
 
-Run
+The serial console will be redirected during test to `${BENCH_BASE}/qemu.log` on the tomcat host machine. After test the log
+is copied to the result directory.
+
+Each test has a JSON file with attributes holding environment information, test parameters and results:
 
 ```sh
-sudo ./setup.sh
+$ cat results/1403858522.98/properties.json 
+{
+    "bench.version": "f00507ec40b6bca91714757586d93338e51478ab", 
+    "datetime": "2014.06.27 10:42:03", 
+    "id": "1403858522.98", 
+    "load_driver": {
+        "uname": "Linux huginn.cloudious.local 3.14.7-200.fc20.x86_64 #1 SMP Wed Jun 11 22:38:05 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux", 
+        "hostname": "huginn.cloudious.local", 
+        "cpu": {
+            "n_cores": "8", 
+            "model": " Intel(R) Core(TM) i7-3820 CPU @ 3.60GHz"
+        }
+    }, 
+    "end": "1403858683.743105378", 
+    "guest": {
+        "bridge": "bridge2", 
+        "image": {
+            "name": "net-rcu", 
+            "apps.version": "19a345fef3902a7654741c4afc760add51c65127", 
+            "osv.version": "v0.09-261-g803bf2c", 
+            "webapp.version": "45dc36acf79d7702d0a0b2b266d8e0e56fb9083e", 
+            "os": "osv", 
+            "osv.sha1": "803bf2ccda9a2e7c14c1248218c0e47f76553878"
+        }, 
+        "cpus": 4, 
+        "memsize": "4g"
+    }, 
+    "tomcat": {
+        "uname": "Linux muninn.cloudious 3.14.7-200.fc20.x86_64 #1 SMP Wed Jun 11 22:38:05 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux", 
+        "hostname": "muninn.cloudious", 
+        "cpu": {
+            "n_cores": "8", 
+            "model": " Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz"
+        }
+    }, 
+    "start": "1403858621.435906001", 
+    "ping": "rtt min/avg/max/mdev = 0.281/0.345/0.465/0.086 ms", 
+    "wrk": {
+        "latency": {
+            "max": 24.54, 
+            "unit": "ms"
+        }, 
+        "errors": 0, 
+        "cmdline": "wrk --latency -t4 -c128 -d1m http://192.168.2.53:8081/servlet/json", 
+        "throughput": "62518.26", 
+        "duration": "1m", 
+        "nr_connections": "128", 
+        "nr_threads": "4"
+    }, 
+    "warmup_start": "1403858559.137378703", 
+    "qemu.version": "1.6.2"
+}
 ```
 
+These properties can be later used for grouping in `report.py stats -g <attr1> -g <attr2>`.
 
-## Running the test
+# Reporting
 
-Restore image from the backup and start the guest. It is important to do it before each test
-because the guest file system fills up very quickly. If the image was not restored the consecutive samples would not be independent.
-
-For OSv:
-```sh
-cd ~/src/osv
-cp usr.img.original build/release/usr.img && \
-sudo scripts/run.py -m4g -nv -b bridge0
-```
-
-For Fedora:
-```sh
-cp ~/fedora/fedora.img.original ~/fedora/fedora.img && \
-sudo scripts/run.py -m4g -nv -b bridge0 -i ~/fedora/fedora.img
-```
-
-Read the IP of OSv and assign to `GUEST_IP` variable on **load driver** machine.
-
-Start the test on load driver machine:
-
-```sh
-./perform-one-test.sh
-```
-
-Kill the guest.
-
-
-
-## After test
-
-Restore system configuration on load driver machine
-
-```sh
-cd ~/src/tomcat-bench
-sudo ./restore_sys_conf.sh
-rm ./restore_sys_conf.sh
-```
-
-### Obtaining test variables
-
-Host:
-
-```sh
-cd ~/src/osv
-echo OSV_VERSION=$(scripts/osv-version.sh)
-cd apps
-echo APPS_VERSION=$(git rev-parse HEAD)
-```
-
-```sh
-cd ~/src/FrameworkBenchmarks
-echo TEST_APP_VERSION=$(git rev-parse HEAD)
-```
-
-```sh
-echo QEMU_VERSION=$(qemu-system-x86_64 -version | sed -r 's/.*version ([0-9.]+).*/\1/')
-```
-
-Load driver:
+You can list all completed tests with `bench.py list`, eg:
 
 ```sh
-cd ~/src/tomcat-bench
-echo BENCHMARK_VERSION=$(git rev-parse HEAD)
+$ ./report.py list
+ID            OS     IMAGE              OS.VERSION         TIME                ERR THROUGHPUT
+1403813181.04 osv    master             v0.09-260-g79c13c3 2014.06.26 22:06:21 0   59329.37
+1403813520.82 osv    hacks              v0.09-267-g64ff688 2014.06.26 22:12:01 0   75272.54
+1403813689.76 osv    master             v0.09-260-g79c13c3 2014.06.26 22:14:49 0   62154.05
 ```
+
+You can print a statistics chart like this:
+```sh
+$ ./report.py stats -g guest/image/osv.version -g guest/image/os
+throughput
+======
+
+                                   name        avg          stdev             min        max count
+          ('v0.09-260-g79c13c3', 'osv')   61473.88    +0.0% 1221.29      59329.37   62497.05     6
+          ('v0.09-261-g803bf2c', 'osv')   61459.40          995.64       60069.00   62548.94     7
+          ('v0.09-267-g64ff688', 'osv')   76485.82   +24.4% 1379.49      74769.99   78256.17     7
+```
+
+Only results without errors are considered.
+
+The `-g` arguments determine how results are grouped. The values passed are attribute locators. The attributes come from `test.properties` file. You can group using any attribute set.

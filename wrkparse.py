@@ -16,7 +16,7 @@ def text_to_nanos(text):
 
 class wrk_output:
     pattern = r"""Running (?P<test_duration>.+?) test @ (?P<url>.+)
-  (?P<nr_threads>\d+) threads and (?P<nr_connections>\d+) connections\s*
+  (?P<nr_threads>\d+) threads and (?P<nr_connections>\d+) connections\s*.*
   Thread Stats   Avg      Stdev     Max   \+/- Stdev
     Latency\s+([^ ]+)\s+([^ ]+)\s+(?P<latency_max>[^ ]+)\s+([^ ]+?)
     Req/Sec\s+([^ ]+)\s+([^ ]+)\s+([^ ]+)\s+([^ ]+?)(
@@ -54,6 +54,8 @@ Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
     def latency_max(self):
         return text_to_nanos(self.m.group('latency_max'))
 
+    def __getattr__(self, name):
+        return self.m.group(name)
 
 def print_table(data):
     formats = []
@@ -66,12 +68,14 @@ def print_table(data):
     print format % tuple(map(operator.itemgetter(0), data))
     print format % tuple(map(str, map(operator.itemgetter(1), data)))
 
-if __name__ == "__main__":
-    with open(sys.argv[1]) as file:
-        summary = wrk_output(file.read())
+def read(filename):
+    with open(filename) as file:
+        return wrk_output(file.read())
 
-        print_table([
-            ('Req/s', summary.requests_per_second),
-            ('Errors', summary.error_count),
-            ('Latency-max [ms]', summary.latency_max / 1e6),
-        ])
+if __name__ == "__main__":
+    summary = read(sys.argv[1])
+    print_table([
+        ('Req/s', summary.requests_per_second),
+        ('Errors', summary.error_count),
+        ('Latency-max [ms]', summary.latency_max / 1e6),
+    ])

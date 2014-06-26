@@ -10,9 +10,13 @@ SRC_BASE=~/src
 
 if [ ! -e $SRC_BASE/FrameworkBenchmarks ]; then
     git clone https://github.com/tgrabiec/FrameworkBenchmarks.git ${SRC_BASE}/FrameworkBenchmarks
+else
+    cd ${SRC_BASE}/FrameworkBenchmarks
+    git fetch
+    git checkout -f origin/master
 fi
 
-echo "Checkout OSv"
+echo "Checking out OSv"
 
 if [ ! -e $SRC_BASE/osv ]; then
     git clone https://github.com/cloudius-systems/osv.git ${SRC_BASE}/osv
@@ -22,19 +26,14 @@ else
     cd ${SRC_BASE}/osv
     git fetch
     git checkout -f ${OSV_VERSION_REF:-origin/master}
-    git submodule update
+    git submodule update --init -f
 fi
 
-echo "Checking out tomcat module"
-
-cd ${SRC_BASE}/osv/apps
-git remote add tgrabiec https://github.com/tgrabiec/osv-apps.git || warn "Failed to add remote"
-git fetch tgrabiec
-git checkout -f ${APPS_VERSION_REF:-tgrabiec/tomcat-perf}
 
 echo "Making tomcat module"
 
 cd ${SRC_BASE}/osv/apps/tomcat
+make clean || warn "make clean failed"
 make
 
 echo "Building the test app"
@@ -47,17 +46,13 @@ mvn clean install
 
 echo "Copying test app to tomcat module"
 
-cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/upstream/*/webapps/
+cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/ROOTFS/usr/tomcat
 
 echo "Building OSv image"
 
 cd ${SRC_BASE}/osv
 rm -rf build/release
 make clean
-make external && make image=tomcat
-
-echo "Saving the image to a backup file"
-
-cp build/release/usr.img usr.img.original
+make image=tomcat
 
 echo "Done."
