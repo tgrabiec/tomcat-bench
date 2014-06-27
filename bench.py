@@ -72,7 +72,7 @@ class Test(object):
 def wait_for_server(box, host, port, timeout=30):
     remote.await(remote.when(remote.is_reachable_from, args=(box, host, port), poll_delay=1), timeout=timeout)
 
-def wait_for_ip(box, qemu_log, timeout=5):
+def wait_for_ip(box, qemu_log, timeout=10):
     def get_ip():
         return box.eval(['grep eth0 ' + qemu_log])
     remote.await(remote.when(get_ip, poll_delay=1), timeout=timeout)
