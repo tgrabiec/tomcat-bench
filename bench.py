@@ -45,18 +45,17 @@ def get_box(url):
 def format_dict(data):
     return json.dumps(data, indent=4)
 
-def start_qemu(box, memsize, cpus, image, guest_ip,
-        slave_pid, bridge='virbr0', logfile='qemu.log'):
+def start_qemu(box, memsize, cpus, image, slave_pid, bridge='virbr0', logfile='qemu.log'):
 
-    cmdline = 'cd ${%s}; export OSV_BRIDGE=%s; qemu-system-x86_64 \
+    cmdline = 'cd %s; export OSV_BRIDGE=%s; qemu-system-x86_64 \
         -m %s -s -smp %d -vnc :1 -device virtio-blk-pci,id=blk0,bootindex=0,drive=hd0,scsi=off \
         -drive file=%s,if=none,id=hd0,aio=native,cache=none \
-        -netdev tap,id=hn0,script=qemu-ifup.sh,vhost=on \
+        -netdev tap,id=hn0,script=./qemu-ifup.sh,vhost=on \
         -device virtio-net-pci,netdev=hn0,id=nic1 -device virtio-rng-pci \
         -enable-kvm -cpu host,+x2apic -chardev stdio,mux=on,id=stdio,signal=off \
         -mon chardev=stdio,mode=readline,default -device isa-serial,chardev=stdio 2>&1 > %s \
          & pid=$!; tail -f $(mktemp) --pid %d; kill $pid' % (
-            ENV_BASE, bridge, memsize, cpus, image, logfile, slave_pid)
+            remote.get_env(box, ENV_BASE), bridge, memsize, cpus, image, logfile, slave_pid)
 
     print 'Starting guest...'
     print cmdline
@@ -205,7 +204,7 @@ def push_image(args):
 
 def drop_page_cache(box):
     print 'Dropping page cache'
-    tomcat_box.shell(sudo_command('echo 3 > /proc/sys/vm/drop_caches'))
+    box.shell(sudo_command('echo 3 > /proc/sys/vm/drop_caches'))
 
 def run(args):
     user_config = get_user_config(args)
@@ -272,9 +271,10 @@ def run(args):
     print 'Started remote supervisor, pid=%d' % (slave_pid)
 
     qemu_log = os.path.join(tomcat_bench_base, 'qemu.log')
+    start_qemu(tomcat_box, memsize, cpus, tmp_image_path, slave_pid, bridge, qemu_log)
+
     guest_ip = wait_for_ip(tomcat_box, qemu_log)
     print "Guest IP is " + guest_ip
-    start_qemu(tomcat_box, memsize, cpus, tmp_image_path, guest_ip, slave_pid, bridge, qemu_log)
 
     tomcat_port = 8081
     print 'Waiting for Tomcat (%s:%d) ...' % (guest_ip, tomcat_port)

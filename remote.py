@@ -46,7 +46,7 @@ def when_reachable(host, port):
     return when(is_endpoint_reachable, args=(host, port))
 
 def get_env(box, name):
-    return box.eval(['echo \${%s}' % name])
+    return box.eval(['echo ${%s}' % name])
 
 class RemoteShell(object):
     def __init__(self, hostname, port=None, username=os.environ['USER']):
