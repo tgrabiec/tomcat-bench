@@ -3,7 +3,6 @@ import os
 import runpy
 import argparse
 import time
-import config
 import remote
 import subprocess
 import pprint
