@@ -31,6 +31,8 @@ class wrk_output:
 Requests/sec\:\s*(?P<req_per_sec>.+?)
 Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
 
+    numeric_attributes = set(['nr_threads', 'req_per_sec', 'total_requests', 'nr_connections'])
+
     def __init__(self, text):
         self.m = re.match(self.pattern, text, re.MULTILINE)
         if not self.m:
@@ -55,7 +57,10 @@ Transfer/sec\:\s*(?P<transfer>.*?)\s*"""
         return text_to_nanos(self.m.group('latency_max'))
 
     def __getattr__(self, name):
-        return self.m.group(name)
+        val = self.m.group(name)
+        if name in self.numeric_attributes:
+            return float(val)
+        return val
 
 def print_table(data):
     formats = []
