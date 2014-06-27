@@ -138,7 +138,7 @@ These properties can be later used for grouping in `report.py stats -g <attr1> -
 
 # Reporting
 
-You can list all completed tests with `bench.py list`, eg:
+You can list all completed tests with `report.py list`, eg:
 
 ```sh
 $ ./report.py list
