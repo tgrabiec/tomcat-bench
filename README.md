@@ -3,10 +3,10 @@ Tomcat performance testing
 
 # Setting up
 
-The testing evnironment needs to be checked out on the machine from which tests will be started:
+The testing environment needs to be checked out on the machine from which tests will be started:
 
 ```sh
-git clone https://github.com/tgrabiec/tomcat-bench ~/src/tomcat-bench
+git clone https://github.com/tgrabiec/tomcat-bench
 ```
 
 Note that this does not have to be (and shoud not be) the machine on which tomcat or load driver will run.
