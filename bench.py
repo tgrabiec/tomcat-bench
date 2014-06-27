@@ -211,7 +211,10 @@ def run(args):
     user_config = get_user_config(args)
 
     test_id = str(time.time())
-    test_dir = os.path.join(bench_base, 'results', test_id)
+    results_dir = os.path.join(bench_base, 'results')
+    if not os.path.exists(results_dir):
+        os.mkdir(results_dir)
+    test_dir = os.path.join(results_dir, test_id)
     os.mkdir(test_dir)
 
     test = Test(bench_base, test_id, test_dir, user_config)
