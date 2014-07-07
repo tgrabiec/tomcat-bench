@@ -6,8 +6,6 @@ function warn()
     echo "WARN: $@"
 }
 
-SRC_BASE=~/src
-
 if [ ! -e $SRC_BASE/FrameworkBenchmarks ]; then
     git clone https://github.com/tgrabiec/FrameworkBenchmarks.git ${SRC_BASE}/FrameworkBenchmarks
 else
