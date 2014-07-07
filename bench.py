@@ -74,12 +74,16 @@ def wait_for_server(box, host, port, timeout=30):
 
 def wait_for_ip(box, qemu_log, timeout=10):
     def get_ip():
-        return box.eval(['grep eth0 ' + qemu_log])
+        ip_line = box.eval(['grep eth0 ' + qemu_log])
+        m = re.match(r'eth0: (?P<ip>[\d.]+)', ip_line)
+        if m:
+            return m.group('ip')
+
     remote.await(remote.when(get_ip, poll_delay=1), timeout=timeout)
-    return get_ip().split()[1]
+    return get_ip()
 
 def is_qemu_running(box):
-    return bool(box.eval(['ps -ef | grep qemu | grep -v grep']))
+    return bool(box.eval(['pidof grep qemu-system-x86_64']))
 
 def get_box_info(box):
     return {
