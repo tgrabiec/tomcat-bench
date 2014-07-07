@@ -45,8 +45,10 @@ def await(event, timeout=None):
 def when_reachable(host, port):
     return when(is_endpoint_reachable, args=(host, port))
 
-def get_env(box, name):
-    return box.eval(['echo ${%s}' % name])
+def get_env(box, name, optional=False):
+    value = box.eval(['echo ${%s}' % name])
+    if not optional and not value:
+        raise Exception('Variable %s not set on %s' % (name, box))
 
 class RemoteShell(object):
     def __init__(self, hostname, port=None, username=os.environ['USER']):
