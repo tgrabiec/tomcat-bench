@@ -159,7 +159,7 @@ def make_image(args):
     make_command = 'SRC_BASE=' + src_base
 
     if args.osv_rev:
-        make_command += 'OSV_VERSION_REF=' + args.osv_rev
+        make_command += ' OSV_VERSION_REF=' + args.osv_rev
 
     make_command += ' ./setup-host.sh'
     
