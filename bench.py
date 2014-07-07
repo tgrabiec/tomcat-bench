@@ -83,7 +83,7 @@ def wait_for_ip(box, qemu_log, timeout=10):
     return get_ip()
 
 def is_qemu_running(box):
-    return bool(box.eval(['pidof qemu-system-x86_64']))
+    return bool(box.eval(['ps -eo comm | grep "^qemu-system-x86"']))
 
 def get_box_info(box):
     return {
