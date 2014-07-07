@@ -46,6 +46,7 @@ def format_dict(data):
     return json.dumps(data, indent=4)
 
 def start_qemu(box, memsize, cpus, image, slave_pid, bridge='virbr0', logfile='qemu.log'):
+    box.run(sudo_command('rm -f ' + logfile))
 
     cmdline = 'cd %s; export OSV_BRIDGE=%s; qemu-system-x86_64 \
         -m %s -s -smp %d -vnc :1 -device virtio-blk-pci,id=blk0,bootindex=0,drive=hd0,scsi=off \
