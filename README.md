@@ -23,6 +23,11 @@ export BENCH_IMAGE_REPO=$HOME/img
 PATH=$PATH:$BENCH_BASE
 ```
 
+Because the scripts need to call `sudo` on target machines over ssh you need to disable `requiretty` for your user by adding this to sudo config (via `sudo visudo`), replacing `username` with your user name:
+```text
+Defaults:username !requiretty
+```
+
 # Test configuration
 
 You need to create a configuration file by copying `configuration_template.py` and filling it in. You will pass
