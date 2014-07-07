@@ -49,6 +49,7 @@ def get_env(box, name, optional=False):
     value = box.eval(['echo ${%s}' % name])
     if not optional and not value:
         raise Exception('Variable %s not set on %s' % (name, box))
+    return value
 
 class RemoteShell(object):
     def __init__(self, hostname, port=None, username=os.environ['USER']):
