@@ -42,15 +42,18 @@ git checkout -f ${TEST_APP_VERSION_REF:-origin/master}
 cd servlet
 mvn clean install
 
-echo "Copying test app to tomcat module"
-
-cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/ROOTFS/usr/tomcat/webapps
-
 echo "Building OSv image"
 
 cd ${SRC_BASE}/osv
 rm -rf build/release
 make clean
 make image=tomcat
+
+echo "Copying test app to tomcat module"
+
+cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/ROOTFS/usr/tomcat/webapps
+make image=tomcat
+
+cd ${SRC_BASE}/osv
 
 echo "Done."
