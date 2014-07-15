@@ -44,7 +44,7 @@ mvn clean install
 
 echo "Copying test app to tomcat module"
 
-cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/ROOTFS/usr/tomcat
+cp ${SRC_BASE}/FrameworkBenchmarks/servlet/target/servlet.war ${SRC_BASE}/osv/apps/tomcat/ROOTFS/usr/tomcat/webapps
 
 echo "Building OSv image"
 
