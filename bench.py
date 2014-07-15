@@ -200,7 +200,6 @@ def push_image(args):
         'osv.version': trim(subprocess.check_output(['scripts/osv-version.sh'])),
         'osv.sha1': trim(subprocess.check_output(['git', 'rev-parse', 'HEAD'])),
         'apps.version': trim(subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd='apps')),
-        'webapp.version': trim(subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd='../FrameworkBenchmarks')),
     }
 
     print('Pushed \'%s\' as: ' % name)
